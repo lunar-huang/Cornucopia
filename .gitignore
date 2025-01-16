@@ -1,3 +1,11 @@
 /.git
 /.vs
 /.vscode
+/Library
+/Logs
+/obj
+/Packages
+/Temp
+/UserSettings
+/Assets/TextMesh Pro
+/Assets/Sprites/Palettes
