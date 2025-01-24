@@ -36,15 +36,19 @@ public class ToolbarUI : MonoBehaviour
 
         UpdateUI();
     }
+
     public void UpdateUI()
     {
         List<SlotData> slotdataList = InventoryManager.Instance.toolbarData.slotList;
 
         for (int i = 0; i < slotdataList.Count; i++)
         {
+            Debug.Log($"slotNumber {i} Data inside: ItemType={slotdataList[i]?.item?.type ?? ItemType.None}, SubType={slotdataList[i]?.item?.subType ?? SubType.None}");
             slotuiList[i].SetData(slotdataList[i]);
         }
     }
+
+
     void ToolbarSelectControl()
     {
         for (int i = (int)KeyCode.Alpha1; i <= (int)KeyCode.Alpha9; i++)

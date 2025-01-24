@@ -32,15 +32,22 @@ public class Player : MonoBehaviour
             anim.SetBool("isWalking", false);
         }
 
-        if (toolbarUI.GetSelectedSlotUI() != null
-            && toolbarUI.GetSelectedSlotUI().GetData().item.type == ItemType.Hoe
-            && Input.GetKeyDown(KeyCode.Space))
+        if (toolbarUI.GetSelectedSlotUI() != null)
         {
+            ItemData selectedItem = toolbarUI.GetSelectedSlotUI().GetData().item;
+            Debug.Log("You are selecting:" + selectedItem.type + selectedItem.subType);
 
-            PlantManager.Instance.HoeGround(transform.position);
-            anim.SetTrigger("hoe");
+            if (selectedItem.subType == SubType.Hoe && Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Hoe Anim is triggered!");
+                PlantManager.Instance.HoeGround(transform.position);
+                anim.SetTrigger("hoe");
+            }
         }
-
+        else
+        {
+            Debug.LogWarning("工具栏未选中任何物品！");
+        }
 
 
     }
@@ -54,15 +61,32 @@ public class Player : MonoBehaviour
         transform.Translate(direction * speed * Time.deltaTime);
     }
 
+    // private void OnTriggerEnter2D(Collider2D collision)
+    // {
+    //     if (collision.tag == "Pickable")
+    //     {
+    //         InventoryManager.Instance.AddToBackpack(collision.GetComponent<Pickable>().type);
+    //         Destroy(collision.gameObject);
+
+    //     }
+    // }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.tag == "Pickable")
+        if (collision.CompareTag("Pickable")) // 确保物品是可拾取的
         {
-            InventoryManager.Instance.AddToBackpack(collision.GetComponent<Pickable>().type);
-            Destroy(collision.gameObject);
+            Pickable pickable = collision.GetComponent<Pickable>();
+            if (pickable != null)
+            {
+                ItemData itemData = pickable.itemData; // 获取完整的物品数据
+                Debug.Log($"拾取物品：Type={itemData.type}, SubType={itemData.subType}");
 
+                InventoryManager.Instance.AddToBackpack(itemData); // 将完整物品数据存入背包
+                Destroy(collision.gameObject); // 删除地上的物品
+            }
         }
     }
+
 
     public void ThrowItem(GameObject itemPrefab,int count)
     {
