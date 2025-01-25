@@ -26,4 +26,8 @@ public class ItemData :ScriptableObject
     public Sprite sprite;
     public GameObject prefab;
     public int maxCount=1;
+
+    // 作物生长的相关字段
+    public Sprite[] growthSprites; // 作物生长阶段的图片（数组，每阶段一张图）
+    public float totalGrowthTime; // 总生长时间（秒）
 }

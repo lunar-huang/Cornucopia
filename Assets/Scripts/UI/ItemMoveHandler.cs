@@ -36,13 +36,13 @@ public class ItemMoveHandler : MonoBehaviour
             icon.GetComponent<RectTransform>().anchoredPosition = position;
         }
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (EventSystem.current.IsPointerOverGameObject() == false)
-            {
-                ThrowItem();
-            }
-        }
+        // if (Input.GetMouseButtonDown(0))
+        // {
+        //     if (EventSystem.current.IsPointerOverGameObject() == false)
+        //     {
+        //         ThrowItem();
+        //     }
+        // }
 
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
@@ -131,26 +131,26 @@ public class ItemMoveHandler : MonoBehaviour
     }
 
 
-    private void ThrowItem()
-    {
-        if (selectedSlotData != null)
-        {
-            GameObject prefab = selectedSlotData.item.prefab;
-            int count = selectedSlotData.count;
-            if (isCtrlDown)
-            {
-                player.ThrowItem(prefab, 1);
-                selectedSlotData.Reduce();
-            }
-            else
-            {
-                player.ThrowItem(prefab, count);
-                selectedSlotData.Clear();
-            }
-            ClearHand();
-        }
-        
-    }
+    // private void ThrowItem()
+    // {
+    //     if (selectedSlotData != null)
+    //     {
+    //         GameObject prefab = selectedSlotData.item.prefab;
+    //         int count = selectedSlotData.count;
+    //         if (isCtrlDown)
+    //         {
+    //             player.ThrowItem(prefab, 1);
+    //             selectedSlotData.Reduce();
+    //         }
+    //         else
+    //         {
+    //             player.ThrowItem(prefab, count);
+    //             selectedSlotData.Clear();
+    //         }
+    //         ClearHand();
+    //     }        
+    // }
+
     private void MoveToEmptySlot(SlotData fromData,SlotData toData)
     {
         if (isCtrlDown)

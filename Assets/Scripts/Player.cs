@@ -12,44 +12,18 @@ public class Player : MonoBehaviour
     private Vector2 direction = Vector2.zero;
 
     public ToolbarUI toolbarUI;
+    public static Player Instance { get; private set; }
 
     private void Awake()
     {
+        Instance = this; // 创建全局单例
         anim = GetComponent<Animator>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        if (direction.magnitude > 0)
-        {
-            anim.SetBool("isWalking", true);
-            anim.SetFloat("horizontal", direction.x);
-            anim.SetFloat("vertical", direction.y);
-        }
-        else
-        {
-            anim.SetBool("isWalking", false);
-        }
-
-        if (toolbarUI.GetSelectedSlotUI() != null)
-        {
-            ItemData selectedItem = toolbarUI.GetSelectedSlotUI().GetData().item;
-            Debug.Log("You are selecting:" + selectedItem.type + selectedItem.subType);
-
-            if (selectedItem.subType == SubType.Hoe && Input.GetKeyDown(KeyCode.Space))
-            {
-                Debug.Log("Hoe Anim is triggered!");
-                PlantManager.Instance.HoeGround(transform.position);
-                anim.SetTrigger("hoe");
-            }
-        }
-        else
-        {
-            Debug.LogWarning("工具栏未选中任何物品！");
-        }
-
-
+        HandleMovement();
+        HandleAction();
     }
 
     private void FixedUpdate()
@@ -61,15 +35,61 @@ public class Player : MonoBehaviour
         transform.Translate(direction * speed * Time.deltaTime);
     }
 
-    // private void OnTriggerEnter2D(Collider2D collision)
-    // {
-    //     if (collision.tag == "Pickable")
-    //     {
-    //         InventoryManager.Instance.AddToBackpack(collision.GetComponent<Pickable>().type);
-    //         Destroy(collision.gameObject);
+    private void HandleMovement()
+    {
+        if (direction.magnitude > 0)
+        {
+            anim.SetBool("isWalking", true);
+            anim.SetFloat("horizontal", direction.x);
+            anim.SetFloat("vertical", direction.y);
+        }
+        else
+        {
+            anim.SetBool("isWalking", false);
+        }
+    }
 
-    //     }
-    // }
+    private void HandleAction()
+    {
+        // 检测鼠标左键点击，用于种植种子
+        if (Input.GetMouseButtonDown(0))
+        {
+            ToolbarSlotUI selectedSlot = toolbarUI.GetSelectedSlotUI();
+            if (selectedSlot != null)
+            {
+                ItemData selectedItem = selectedSlot.GetData().item;
+                if (selectedItem.type == ItemType.Seed) // 检查是否选中了种子
+                {
+                    Vector3 mouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                    Vector3 playerPosition = transform.position;
+                    mouseWorldPosition.z = 0; // 确保 2D 游戏 Z 坐标为 0
+                    Debug.Log($"尝试种植：{selectedItem.subType}，位置：{playerPosition}");
+
+                    PlantManager.Instance.PlantSeed(playerPosition, selectedItem); // 调用 PlantManager 种植方法
+                }
+                else
+                {
+                    Debug.Log("当前选中的物品不是种子，无法种植！");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("工具栏未选中任何物品，无法执行种植操作！");
+            }
+        }
+
+        // 检测空格键锄地
+        if (toolbarUI.GetSelectedSlotUI() != null)
+        {
+            ItemData selectedItem = toolbarUI.GetSelectedSlotUI().GetData().item;
+            if (selectedItem.subType == SubType.Hoe && Input.GetKeyDown(KeyCode.Space))
+            {
+                Debug.Log("Hoe Anim is triggered!");
+                PlantManager.Instance.HoeGround(transform.position);
+                anim.SetTrigger("hoe");
+            }
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -84,18 +104,6 @@ public class Player : MonoBehaviour
                 InventoryManager.Instance.AddToBackpack(itemData); // 将完整物品数据存入背包
                 Destroy(collision.gameObject); // 删除地上的物品
             }
-        }
-    }
-
-
-    public void ThrowItem(GameObject itemPrefab,int count)
-    {
-        for(int i = 0; i < count; i++)
-        {
-            GameObject go =  GameObject.Instantiate(itemPrefab);
-            Vector2 direction = Random.insideUnitCircle.normalized * 1.2f;
-            go.transform.position = transform.position + new Vector3(direction.x,direction.y,0);
-            go.GetComponent<Rigidbody2D>().AddForce(direction*3);
         }
     }
 }

@@ -7,6 +7,7 @@ public class ToolbarUI : MonoBehaviour
     public List<ToolbarSlotUI> slotuiList;
 
     private ToolbarSlotUI selectedSlotUI;//data type
+    private SlotData slotData;
 
     // Start is called before the first frame update
     void Start()
@@ -65,4 +66,20 @@ public class ToolbarUI : MonoBehaviour
             }
         }
     }
+
+    public void RemoveOneFromSelectedSlot()
+    {
+        if (selectedSlotUI != null && selectedSlotUI.GetData().count > 0)
+        {
+            selectedSlotUI.GetData().count -= 1; // 减少数量
+            if (selectedSlotUI.GetData().count == 0)
+            {
+                slotData=selectedSlotUI.GetData();
+                slotData.Clear(); // 如果数量为 0，清空槽位数据
+            }
+            UpdateUI(); // 更新 UI 显示
+        }
+
+    }
+
 }
