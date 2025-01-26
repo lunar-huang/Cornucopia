@@ -7,15 +7,18 @@ public enum ItemType
     None=0,
     Tool=1,
     Seed=2,
-    Crop=3   // 作物（已成熟）
+    Crop=3,   // 作物（已成熟）
+    Animal=4,
 }
 
 public enum SubType
 {
     None=0,
-    Seed_Carrot=10,
-    Seed_Tomato=20,
-    Hoe=30
+    Carrot=10,
+    Tomato=20,
+    Hoe=30,
+    Chicken=40,
+    Cow=50,
 }
 
 [CreateAssetMenu()]
