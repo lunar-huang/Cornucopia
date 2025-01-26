@@ -11,6 +11,7 @@ public class PlantManager : MonoBehaviour
 
     public Tile interactableTile;
     public Tile groundHoedTile;
+    //private ItemData CropData;
 
     // 存储种植状态
     private Dictionary<Vector3Int, PlantedSeedData> plantedSeeds = new Dictionary<Vector3Int, PlantedSeedData>();
@@ -30,7 +31,7 @@ public class PlantManager : MonoBehaviour
             this.currentStage = 0; // 初始阶段
         }
     }
-    
+
     private void Awake()
     {
         Instance = this;
@@ -135,5 +136,100 @@ public class PlantManager : MonoBehaviour
             }
         }
     }
+
+    // public void Harvest(Vector3 position)
+    // {
+    //     Vector3Int tilePosition = interactableMap.WorldToCell(position);
+
+    //     // 检查地块是否有种植的植物
+    //     if (!plantedSeeds.ContainsKey(tilePosition))
+    //     {
+    //         Debug.LogWarning("无法收获！该地块没有种植任何植物。");
+    //         return;
+    //     }
+
+    //     // 获取种植数据
+    //     PlantedSeedData seedData = plantedSeeds[tilePosition];
+
+    //     // 检查植物是否成熟
+    //     int totalStages = seedData.seedData.growthSprites.Length;
+    //     if (seedData.currentStage != totalStages - 1) // 检查是否达到最后阶段
+    //     {
+    //         Debug.LogWarning("植物未成熟，无法收获！");
+    //         return;
+    //     }
+
+    //     // 收获植物
+    //     Debug.Log($"收获植物：{seedData.seedData.subType} 在位置：{tilePosition}");
+        
+    //     CropData.subType = seedData.seedData.subType;
+    //     CropData.type = ItemType.Crop;
+
+    //     // 将成熟作物添加到玩家背包
+    //     Debug.Log($"trying to harvest type:{CropData.type}, subtype:{CropData.subType}");
+    //     InventoryManager.Instance.AddToBackpack(CropData);
+
+    //     if (!seedObjects.ContainsKey(tilePosition))
+    //     {
+    //         Debug.LogWarning("无法收获！该地块的种子对象不存在。");
+    //         return;
+    //     }
+    //     // 删除种植的植物对象
+    //     Destroy(seedObjects[tilePosition]);
+
+    //     // 恢复地块为锄地状态
+    //     interactableMap.SetTile(tilePosition, groundHoedTile);
+
+    //     // 移除种植数据
+    //     plantedSeeds.Remove(tilePosition);
+    //     seedObjects.Remove(tilePosition);
+    // }
+
+    public void Harvest(Vector3 position)
+    {
+        Vector3Int tilePosition = interactableMap.WorldToCell(position);
+
+        if (!plantedSeeds.ContainsKey(tilePosition))
+        {
+            Debug.LogWarning("无法收获！该地块没有种植任何植物。");
+            return;
+        }
+
+        PlantedSeedData seedData = plantedSeeds[tilePosition];
+
+        int totalStages = seedData.seedData.growthSprites.Length;
+        if (seedData.currentStage != totalStages - 1)
+        {
+            Debug.LogWarning("植物未成熟，无法收获！");
+            return;
+        }
+
+        Debug.Log($"收获植物：{seedData.seedData.subType} 在位置：{tilePosition}");
+
+        // 根据种子类型找到对应的作物数据
+        ItemData cropData = Resources.Load<ItemData>($"Data/Crop_{seedData.seedData.subType}");
+        if (cropData == null)
+        {
+            Debug.LogError($"未找到对应的作物数据：Crop_{seedData.seedData.subType}");
+            return;
+        }
+
+        // 添加到玩家背包
+        Debug.Log($"trying to harvest type:{cropData.type}, subtype:{cropData.subType}");
+        InventoryManager.Instance.AddToBackpack(cropData);
+
+        if (!seedObjects.ContainsKey(tilePosition))
+        {
+            Debug.LogWarning("无法收获！该地块的种子对象不存在。");
+            return;
+        }
+
+        Destroy(seedObjects[tilePosition]);
+        interactableMap.SetTile(tilePosition, groundHoedTile);
+
+        plantedSeeds.Remove(tilePosition);
+        seedObjects.Remove(tilePosition);
+    }
+
 
 }

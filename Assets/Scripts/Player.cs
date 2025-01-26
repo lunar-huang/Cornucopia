@@ -89,6 +89,14 @@ public class Player : MonoBehaviour
                 anim.SetTrigger("hoe");
             }
         }
+
+        if (Input.GetMouseButtonDown(1)) // 按right mouse尝试收获
+        {
+            Vector3 playerPosition = transform.position; // 玩家当前位置
+            Debug.Log($"尝试Harvest位置：{playerPosition}");
+            PlantManager.Instance.Harvest(playerPosition);
+        }
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
